@@ -52,48 +52,48 @@
     <div id="dateRange"></div> <!-- Date range container -->
     <br>
 
-    <div class="chart-container">
+    <!-- <div class="chart-container">
         <canvas id="utilizationChart"></canvas>
     </div>
-    
+     -->
     <div class="chart-container">
         <canvas id="distanceChart"></canvas>
     </div><br>
-    
+<!--     
     <div  class="chart-container1">
         <h4>Current Vehicle Status</h4>
         <canvas id="pieChart"></canvas>
-    </div>
+    </div> -->
     
     <script>
         // Function to generate date range
-        function generateDateRange() {
-            var dateRangeContainer = document.getElementById('dateRange');
-            var endDate = new Date(); // Today's date
-            endDate.setHours(0, 0, 0, 0); // Set to midnight
-            var startDate = new Date(endDate);
-            startDate.setDate(startDate.getDate() - 6); // Six days before today
+        // function generateDateRange() {
+        //     var dateRangeContainer = document.getElementById('dateRange');
+        //     var endDate = new Date(); // Today's date
+        //     endDate.setHours(0, 0, 0, 0); // Set to midnight
+        //     var startDate = new Date(endDate);
+        //     startDate.setDate(startDate.getDate() - 6); // Six days before today
 
-            var dateRangeText = 'Date Range: ' + formatDate(startDate) + ' to ' + formatDate(endDate);
-            dateRangeContainer.innerText = dateRangeText;
-        }
+        //     var dateRangeText = 'Date Range: ' + formatDate(startDate) + ' to ' + formatDate(endDate);
+        //     dateRangeContainer.innerText = dateRangeText;
+        // }
 
         // Function to format date as YYYY-MM-DD
-        function formatDate(date) {
-            var year = date.getFullYear();
-            var month = ('0' + (date.getMonth() + 1)).slice(-2);
-            var day = ('0' + date.getDate()).slice(-2);
-            return year + '-' + month + '-' + day;
-        }
+        // function formatDate(date) {
+        //     var year = date.getFullYear();
+        //     var month = ('0' + (date.getMonth() + 1)).slice(-2);
+        //     var day = ('0' + date.getDate()).slice(-2);
+        //     return year + '-' + month + '-' + day;
+        // }
 
-        // Call the function to generate date range
-        generateDateRange();
+        // // Call the function to generate date range
+        // generateDateRange();
 
-        fetch('/average-utilization')
-            .then(response => response.json())
-            .then(data => {
-                renderUtilizationChart(data);
-            });
+        // fetch('/average-utilization')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         renderUtilizationChart(data);
+        //     });
 
         fetch('/distance-travelled')
             .then(response => response.json())
@@ -101,32 +101,32 @@
                 renderDistanceChart(data);
             });
 
-        fetch('/vehicle-status-distribution')
-            .then(response => response.json())
-            .then(data => {
-                renderPieChart(data);
-            });
+        // fetch('/vehicle-status-distribution')
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         renderPieChart(data);
+        //     });
 
-        function renderUtilizationChart(data) {
-            var ctx = document.getElementById('utilizationChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: data.labels,
-                    datasets: [{
-                        label: 'Average Utilization by Day for all vehicles(%)',
-                        data: data.utilization,
-                        backgroundColor: '#120237' // Change color here
-                    }]
-                },
-                options: {
-                    title: {
-                        display: true,
-                        text: 'Average Utilization by Day'
-                    }
-                }
-            });
-        }
+        // function renderUtilizationChart(data) {
+        //     var ctx = document.getElementById('utilizationChart').getContext('2d');
+        //     new Chart(ctx, {
+        //         type: 'bar',
+        //         data: {
+        //             labels: data.labels,
+        //             datasets: [{
+        //                 label: 'Average Utilization by Day for all vehicles(%)',
+        //                 data: data.utilization,
+        //                 backgroundColor: '#120237' // Change color here
+        //             }]
+        //         },
+        //         options: {
+        //             title: {
+        //                 display: true,
+        //                 text: 'Average Utilization by Day'
+        //             }
+        //         }
+        //     });
+        // }
 
         function renderDistanceChart(data) {
             var ctx = document.getElementById('distanceChart').getContext('2d');
@@ -135,8 +135,8 @@
                 data: {
                     labels: data.labels,
                     datasets: [{
-                        label: 'Distance Travelled by Day for all vehicles(Km)',
-                        data: data.distance,
+                        label: 'Trips',
+                        data: data.trips,
                         backgroundColor: '#023712' // Change color here
                     }]
                 },
@@ -149,25 +149,25 @@
             });
         }
 
-        function renderPieChart(data) {
-            var ctx = document.getElementById('pieChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'pie',
-                data: {
-                    labels: ['Offline', 'On Trip', 'Online'],
-                    datasets: [{
-                        data: [data.offline, data.on_trip, data.online],
-                        backgroundColor: ['#120237', '#023712', '#120237'] // Change colors here
-                    }]
-                },
-                options: {
-                    title: {
-                        display: true,
-                        text: 'Vehicle Status Distribution'
-                    }
-                }
-            });
-        }
+        // function renderPieChart(data) {
+        //     var ctx = document.getElementById('pieChart').getContext('2d');
+        //     new Chart(ctx, {
+        //         type: 'pie',
+        //         data: {
+        //             labels: ['Offline', 'On Trip', 'Online'],
+        //             datasets: [{
+        //                 data: [data.offline, data.on_trip, data.online],
+        //                 backgroundColor: ['#120237', '#023712', '#120237'] // Change colors here
+        //             }]
+        //         },
+        //         options: {
+        //             title: {
+        //                 display: true,
+        //                 text: 'Vehicle Status Distribution'
+        //             }
+        //         }
+        //     });
+        // }
     </script>
 </body>
 </html>

@@ -16,7 +16,7 @@
         <a href="/registerbyadmin">Register New AV</a>
         <a href="/getalldriver">View All Driver</a>
         <a href="/analytics">Analytics</a>
-        <a href="/alerts">Alerts</a>
+        <!-- <a href="/alerts">Alerts</a> -->
         
     </div>
     <!-- Navigation Bar -->
@@ -89,14 +89,15 @@
 
            // Define coordinates as a JSON object
             var coordinates = JSON.parse('{{ coordinates_json|tojson|safe }}');
-
-
+            console.log(coordinates)
+            console.log(coordinates[0].recent_status.location_lat)
+            // [{'vehicle_id': '2', 'recent_status': {'_id': {'$oid': '663b3096290d6cafe303c911'}, 'location_lat': -64.40533447265625, 'location_long': 21.5595645904541}}, {'vehicle_id': '1', 'recent_status': {'_id': {'$oid': '663b3096290d6cafe303c910'}, 'location_lat': -51.61915588378906, 'location_long': 99.22340393066406}}]
             // Add markers for each coordinate
             for (var i = 0; i < coordinates.length; i++) {
                 new google.maps.Marker({
-                    position: {lat: coordinates[i].latitude, lng: coordinates[i].longitude},
+                    position: {lat: coordinates[i].recent_status.location_lat, lng: coordinates[i].recent_status.location_long},
                     map: map,
-                    label: coordinates[i].id.toString()
+                    label: coordinates[i].vehicle_id.toString()
                 });
             }
         }

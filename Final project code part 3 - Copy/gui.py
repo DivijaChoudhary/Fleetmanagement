@@ -12,7 +12,18 @@ app = Flask(__name__)
 client = MongoClient('mongodb+srv://sayali:k8qfDNzKHE5JOqt5@avfleetcluster.p0ttflr.mongodb.net/?retryWrites=true&w=majority&appName=AVFleetCluster')
 db = client['AVFleetRealTime']
 
+@app.route('/tripsCountPerVehicle')
+def tripsCountPerVehicle():
+    collection = db["trips"]
 
+    # MongoDB aggregation to count trips per vehicle
+    pipeline = [
+        {"$group": {"_id": "$vehicle_id", "total_trips": {"$sum": 1}}}
+    ]
+    result = collection.aggregate(pipeline)
+    trips_count = {doc['_id']: doc['total_trips'] for doc in result}
+    
+    return jsonify(trips_count), 200
 #API to get trip information
 @app.route('/getCurrentTrip/<vehicle_id>', methods=['GET'])
 def getCurrentTrip(vehicle_id):
@@ -38,7 +49,7 @@ def getAllTrips(vehicle_id):
     try:
         collection = db["trips"]
 
-        records = collection.find({'vehicle_id': vehicle_id, 'completed': False}).sort({'start_time': -1}) #asc: 1, desc:-1
+        records = collection.find({'vehicle_id': vehicle_id, 'completed': True}).sort({'start_time': -1}) #asc: 1, desc:-1
         record_list = list(records)
         # print(record_list)
         if len(record_list)>0:
@@ -172,9 +183,9 @@ def getRecentInfo():
 
 
 #API to get Vehicle status information
-@app.route('/getLastStatus', methods=['GET'])
-def getLastStatus():
-    trip_id = ObjectId(request.args.get('trip_id'))
+@app.route('/getLastStatus/<trip_id>', methods=['GET'])
+def getLastStatus(trip_id):
+    trip_id = ObjectId(trip_id)
     print(trip_id)
     try:
         collection = db["vehicle_status"]

@@ -88,6 +88,7 @@ def vehicle_driver_all():
 
 @app.route('/getRealTimeData/<trip_id>')
 def get_real_time_data(trip_id):
+    
     print(trip_id)
 #     sensor_data = [
 #     {"trip_id": "Trip_123", "sensor_id": "1", "timestamp": time.time(), "vehicle_id": "123", 
@@ -98,22 +99,47 @@ def get_real_time_data(trip_id):
 # ]
     
 
-    trip_status_data = [
-        {"trip_id": "Trip_123", "timestamp": time.time(), "location_lat": random.uniform(-90, 90), 
-         "location_lon": random.uniform(-180, 180), "battery_level": random.uniform(0, 100), "speed": random.uniform(0, 120), 
-        "Moving_status": "Moving", 
-         "moving_direction": random.uniform(0, 360), 
-         "isturning": random.choice([True, False]),"Throttle": 0.75,
-        "Steer": -0.001496124779805541,
-        "Brake": 0.0,
-        "Reverse":  random.choice([True, False]),
-        "Hand_brake":  random.choice([True, False]),
-        "Manual":  random.choice([True, False]),
-        "Gear": 1,
-        "Power": "97.7%" 
-        },
-        # Add more trip status data as needed
-    ]
+    # trip_status_data = [
+    #     {"trip_id": "Trip_123", "timestamp": time.time(), "location_lat": random.uniform(-90, 90), 
+    #      "location_lon": random.uniform(-180, 180), "battery_level": random.uniform(0, 100), "speed": random.uniform(0, 120), 
+    #     "Moving_status": "Moving", 
+    #      "moving_direction": random.uniform(0, 360), 
+    #      "isturning": random.choice([True, False]),"Throttle": 0.75,
+    #     "Steer": -0.001496124779805541,
+    #     "Brake": 0.0,
+    #     "Reverse":  random.choice([True, False]),
+    #     "Hand_brake":  random.choice([True, False]),
+    #     "Manual":  random.choice([True, False]),
+    #     "Gear": 1,
+    #     "Power": "97.7%" 
+    #     },
+    #     # Add more trip status data as needed
+    # ]
+    trip_status_data_api=requests.get(f'http://localhost:5002/getLastStatus/{trip_id}')
+    trip_data=json.loads(trip_status_data_api.text)
+    trip_status_data=trip_data
+    print("tripstatus data",trip_status_data)
+#     trip status data [{'_id': {'$oid': '663b0ee7c4f17e247f8e6e16'},
+#                         'Count': 4, 
+#                         'Server FPS': 92.59259033203125, 'Client FPS': 92.59259033203125, 
+#                         'Vehicle': 'Mercedes Sprinter', 
+#                         'Map': 'Town10HD_Opt', 
+#                         'Unique_id': '4a77d76cab9beed398389f2203e85e0bb852271d9e035cc957e6ab5b9bbd75d1', 
+#                         'Speed (km/h)': 26.392090717991017, 'Moving_status': 'Moving', 
+#                         'Heading': {'Value': -179.90170288085938, 
+#                                     'Direction': 'S'}, 
+#                         'Location': {'X': 43.91999053955078, 'Y': -64.40351867675781, 'Z': -0.02229640819132328}, 
+#                         'Number of vehicles': 31,                        
+# 'Throttle': 0.75, 
+# 'Steer': -0.001496124779805541, 
+# 'Brake': 0.0, 'Reverse': False, 
+# 'Hand brake': False, 
+# 'Manual': False, 
+# 'Gear': 1, 
+# 'Power': '97.7%', 
+# 'timestamp': {'$date': '2024-05-07T00:04:26Z'}, 
+# 'trip_id': {'$oid': '663b0edfc4f17e247f8e6e12'}, 
+# 'expiry_date': {'$date': '2025-05-07T00:04:26Z'}}]
     # coordinates = [
     #     {"id": "123", "latitude": 37.7749, "longitude": -74.4194},
     #     {"id": "456", "latitude": 40.7749, "longitude": -74.4194},
@@ -123,31 +149,38 @@ def get_real_time_data(trip_id):
     
     # Filter sensor data and trip status data by trip ID
     # trip_sensor_data = [sensor for sensor in sensor_data if sensor["trip_id"] == trip_id]
-    trip_status_data = [trip for trip in trip_status_data if trip["trip_id"] == trip_id]
-    trip_status_data_jsonify=jsonify({
+    # trip_status_data = [trip for trip in trip_status_data if trip["trip_id"] == trip_id]
+    # trip_status_data_jsonify=jsonify({
         
-        "trip_status_data": trip_status_data
-    })
+    #     "trip_status_data": trip_status_data
+    # })
     # Return the filtered data
+    trip_id = trip_status_data[0]['trip_id']['$oid']
+    print("trip id",trip_id)
     return render_template('real_time_trip_details_carla.html',
-                           trip_status_data=trip_status_data,trip_id=trip_id,trip_status_data_jsonify=trip_status_data_jsonify)
+                           trip_status_data=trip_status_data,trip_id=trip_id,trip_status_data_jsonify=trip_status_data)
 # when you load 5 sec time the realdata 
 @app.route('/getRealTimeDataJSON/<trip_id>')
 def get_real_time_data_json(trip_id):
-    trip_status_data= {"trip_id": "Trip_123", "timestamp": time.time(), "location_lat": random.uniform(-90, 90), 
-        "location_lon": random.uniform(-180, 180), "battery_level": random.uniform(0, 100), "speed": random.uniform(0, 120), 
-        "Moving_status": "Moving", 
-        "moving_direction": random.uniform(0, 360), 
-        "isturning": random.choice([True, False]),
-        "Throttle": 0.75,
-        "Steer": -0.001496124779805541,
-        "Brake": 0.0,
-        "Reverse":  random.choice([True, False]),
-        "Hand_brake":  random.choice([True, False]),
-        "Manual":  random.choice([True, False]),
-        "Gear": 1,
-        "Power": "97.7%" 
-        }
+    # trip_status_data= {"trip_id": "Trip_123", "timestamp": time.time(), "location_lat": random.uniform(-90, 90), 
+    #     "location_lon": random.uniform(-180, 180), "battery_level": random.uniform(0, 100), "speed": random.uniform(0, 120), 
+    #     "Moving_status": "Moving", 
+    #     "moving_direction": random.uniform(0, 360), 
+    #     "isturning": random.choice([True, False]),
+    #     "Throttle": 0.75,
+    #     "Steer": -0.001496124779805541,
+    #     "Brake": 0.0,
+    #     "Reverse":  random.choice([True, False]),
+    #     "Hand_brake":  random.choice([True, False]),
+    #     "Manual":  random.choice([True, False]),
+    #     "Gear": 1,
+    #     "Power": "97.7%" 
+    #     }
+    print("trip id in 2nd",trip_id)
+    trip_status_data_api=requests.get(f'http://localhost:5002/getLastStatus/{trip_id}')
+    trip_status_data=json.loads(trip_status_data_api.text)
+    trip_status_data=trip_status_data
+    print("trip status 2nd",trip_status_data)
     return jsonify(trip_status_data)
 
 @app.route('/register')
@@ -412,12 +445,15 @@ utilization_data = {
 }
 
 distance_data = {
-    "labels": ["Day 1", "Day 2", "Day 3", "Day 4", "Day 5"],
-    "distance": [50, 70, 60, 80, 65]
+    "labels": ["1", "2"],
+    "trips": [2, 4]
 }
 
 @app.route('/analytics')
 def index():
+    # r=requests.get('http://localhost:5002/tripsCountsPerVehicle')
+    # rjson=json.loads(r.text)
+    # print("rjson",rjson)
     return render_template('analytics.html')
 @app.route('/alerts')
 def alerts():
@@ -680,8 +716,14 @@ def admin_dashboard():
 ]
     coordinatesbyapi=requests.get('http://localhost:5002/getRecentTripInfo')
     print(coordinatesbyapi)
-    corri=json.loads(coordinatesbyapi.text)
-    print("coordinated by api ",corri)
+    coordinates=json.loads(coordinatesbyapi.text)
+    print("coordinated by api ",coordinates)
+    # coordinated by api  
+    # [{'vehicle_id': '1', 
+    #   'recent_status': {'_id': {'$oid': '663b2e08290d6cafe303c900'}, 
+                        
+    #     'location_lat': 52.503875732421875, 'location_long': -114.30424499511719}}
+    #     ]
 
     
     return render_template('admin_dashboard.html', fleet=fleet_data,coordinates_json=coordinates)
@@ -773,6 +815,7 @@ scheduler.start()
 
 if __name__ == '__main__':
      app.run(host='127.0.0.1',port=5001,debug=True)
+
 # ******************for alerts******************
 # from flask import Flask, render_template
 # from apscheduler.schedulers.background import BackgroundScheduler

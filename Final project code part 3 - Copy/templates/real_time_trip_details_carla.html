@@ -28,12 +28,12 @@
                 </div>
             </div> -->
             <!-- Gear gauge -->
-            <div class="col-md-4"> 
+            <!-- <div class="col-md-4"> 
                 <div class="container-item gauge-container">
                     <h3 class="gauge-title">Gear</h3>
                     <div id="gear-gauge" class="gauge"></div>
                 </div>
-            </div>
+            </div> -->
             <!-- Speed Gauge -->
             <div class="col-md-4">
                 <div class="container-item gauge-container">
@@ -56,19 +56,19 @@
                 </div>
             </div>
             <!-- brake Gauge -->
-            <div class="col-md-4">
+            <!-- <div class="col-md-4">
                 <div class="container-item gauge-container">
                     <h3 class="gauge-title">Brake</h3>
                     <div id="brake-gauge" class="gauge"></div>
                 </div>
-            </div>
+            </div> -->
             <!-- Battery Level Gauge -->
-            <div class="col-md-4">
+            <!-- <div class="col-md-4">
                 <div class="container-item gauge-container">
                     <h3 class="gauge-title">Battery Level (%)</h3>
                     <div id="battery-level-gauge" class="gauge"></div>
                 </div>
-            </div>
+            </div> -->
             <!-- Engine Temperature Gauge
             <div class="col-md-4">
                 <div class="container-item gauge-container">
@@ -135,6 +135,8 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
+        var tripId = "{{ trip_id }}"
+        console.log(tripId)
         const ctx = document.getElementById('realTimeDataGraph').getContext('2d');
         const realTimeDataGraph = new Chart(ctx, {
             type: 'line',
@@ -192,14 +194,14 @@
             decimals: 2
         });
 
-        var batteryGauge = new JustGage({
-            id: "battery-level-gauge",
-            value: 0.00,
-            min: 0,
-            max: 100,
-            title: "BATTERY LEVEL (%)",
-            decimals: 2
-        });
+        // var batteryGauge = new JustGage({
+        //     id: "battery-level-gauge",
+        //     value: 0.00,
+        //     min: 0,
+        //     max: 100,
+        //     title: "BATTERY LEVEL (%)",
+        //     decimals: 2
+        // });
         var gearGauge = new JustGage({
             id: "gear-gauge",
             value: 0,
@@ -265,24 +267,19 @@
             strokeWeight: 2
         });
         routePath.setMap(map);
-
+        // trip._id['$oid']
+        
         function fetchAndUpdateData() {
-            $.getJSON('/getRealTimeDataJSON/tripId', function(data) { // Replace 'tripId' with actual trip ID variable if needed
-                const now = new Date(data.timestamp * 1000);
-                realTimeDataGraph.data.labels.push(now);
-                realTimeDataGraph.data.datasets[0].data.push({
-                    x: now,
-                    y: data.speed
-                });
-                // realTimeDataGraph.data.datasets[1].data.push({
-                //     x: now,
-                //     y: data.engine_rpm
-                // });
-                // realTimeDataGraph.data.datasets[2].data.push({
-                //     x: now,
-                //     y: data.engine_temp
-                // });
-                realTimeDataGraph.update();
+            var url = '/getRealTimeDataJSON/' + tripId;
+            $.getJSON(url, function(data) { // Replace 'tripId' with actual trip ID variable if needed
+                console.log("data",data)
+                const now = new Date(data[0].timestamp.$date);
+realTimeDataGraph.data.labels.push(now);
+realTimeDataGraph.data.datasets[0].data.push({
+    x: now,
+    y: data[0].speed
+});
+realTimeDataGraph.update();
                 updateGauges(data);
                 updateVehiclePosition(data);
                 updateStatusDetails(data);
@@ -291,19 +288,21 @@
 
         function updateGauges(data) {
             // rpmGauge.refresh(data.engine_rpm);
-            speedGauge.refresh(data.speed);
-            batteryGauge.refresh(data.battery_level);
-            gearGauge.refresh(data.Gear);
-            throttleGauge.refresh(data.Throttle);
-            steerGauge.refresh(data.Steer);
-            brakeGauge.refresh(data.Brake);
+            speedGauge.refresh(data[0].speed);
+           // batteryGauge.refresh(data.battery_level);
+            // gearGauge.refresh(data[0].Gear);
+            throttleGauge.refresh(data[0].Throttle);
+            steerGauge.refresh(data[0].Steer);
+            // brakeGauge.refresh(data[0].Brake);
         //     accelerationGauge.refresh(data.acceleration);
         //     distanceCompletedGauge.refresh(data.distance_completed);
          }
 
         function updateVehiclePosition(data) {
-            console.log("Latitude: ", data.location_lat, "Longitude: ", data.location_lon);  // Check the actual values received
-            var newPosition = new google.maps.LatLng(data.location_lat, data.location_lon);
+            console.log("data in udate",data)
+
+            console.log("Latitude: ", data[0].location_lat, "Longitude: ", data[0].location_long);  // Check the actual values received
+            var newPosition = new google.maps.LatLng(data[0].location_lat, data[0].location_long);
             
             vehicleMarker.setPosition(newPosition);
             routePath.getPath().push(newPosition);
@@ -312,14 +311,15 @@
 
         function updateStatusDetails(data) {
             var details = [
-                {label: "Moving_status", value: data.Moving_status},
+                {label: "Moving_status", value: data[0].Moving_status},
                 
-                // {label: "Steer", value: data.Steer},
-                // {label: "Brake", value: data.Brake},
-                {label: "Reverse", value: data.Reverse},
-                {label: "Hand Brake", value: data.Hand_brake},
+                {label: "Gear", value: data[0].Gear},
+                {label: "Brake", value: data[0].Brake},
+                {label: "Reverse", value: data[0].Reverse},
+               
                 // {label: "Gear", value: data.Gear},
-                {label: "Manual", value: data.Manual},
+                {label: "Manual", value: data[0].Manual},
+                
                 
                 // {label: "Distance Completed", value: data.distance_completed.toFixed(2)},
                 // {label: "Is Turning", value: data.isturning},
@@ -367,7 +367,7 @@
     });
 
 
-        setInterval(fetchAndUpdateData, 5000);
+        setInterval(fetchAndUpdateData, 1000);
     });
     </script>
 </body>
