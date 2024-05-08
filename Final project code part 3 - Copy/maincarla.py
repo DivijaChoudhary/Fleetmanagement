@@ -445,13 +445,14 @@ utilization_data = {
 }
 
 distance_data = {
-    "labels": ["1", "2"],
-    "trips": [2, 4]
+    "labels": ["1", "2","3","4"],
+    "trips": [2, 5, 3,4]
 }
 
 @app.route('/analytics')
 def index():
     # r=requests.get('http://localhost:5002/tripsCountsPerVehicle')
+    # print(r)
     # rjson=json.loads(r.text)
     # print("rjson",rjson)
     return render_template('analytics.html')
@@ -744,9 +745,8 @@ def driver_dashboard():
     fleet_data=json.loads(r1.text)
     # from cookies pass driver id and get vehicle id and vehicle details then for each veg=hicle get current longitute and latitude
     coordinates = [
-    {"id": "123", "latitude": 37.7749, "longitude": -74.4194},
-    {"id": "456", "latitude": 40.7749, "longitude": -74.4194},
-    {"id": "789", "latitude": 42.7749, "longitude": -74.4194},
+    {"id": "", "latitude": 37.7749, "longitude": -74.4194},
+   
     # Add more coordinates here as needed
 ]
 
