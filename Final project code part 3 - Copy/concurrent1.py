@@ -9,7 +9,7 @@ if __name__ == '__main__':
 
     
     process2.wait()
-    process2.wait()
+    process3.wait()
     process1.wait()
 
     print("Both processes completed.")
