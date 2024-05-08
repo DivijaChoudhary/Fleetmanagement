@@ -40,9 +40,9 @@ app.secret_key = '5765878775'
 
 @app.route('/vehicle-details/<vehicle_id>')
 def vehicle_details(vehicle_id):
-    response = requests.get(f'http://localhost:5000/vehicle/{vehicle_id}')
+    response = requests.get(f'http://52.91.48.231:5000/vehicle/{vehicle_id}')
     vehicle_info= json.loads(response.text)
-    response_sensor = requests.get(f'http://localhost:5000/vehicle/{vehicle_id}/sensors')
+    response_sensor = requests.get(f'http://52.91.48.231:5000/vehicle/{vehicle_id}/sensors')
     vehicle_sensor_info= json.loads(response_sensor.text)
     
     print("vehicle info", vehicle_sensor_info)
@@ -64,7 +64,7 @@ def vehicle_details(vehicle_id):
                     'end_time': '2024-04-21 12:00:00'
                 }
             ]
-    maintenance_records=requests.get(f'http://localhost:5000/vehicle/{vehicle_id}/maintenance')
+    maintenance_records=requests.get(f'http://52.91.48.231:5000/vehicle/{vehicle_id}/maintenance')
     vehicle_maintenance_info= json.loads(maintenance_records.text)
     
     print("vehicle info", vehicle_maintenance_info)
@@ -74,7 +74,7 @@ def vehicle_details(vehicle_id):
 # get all driver
 @app.route('/getalldriver', methods=['GET'])
 def vehicle_driver_all():
-    response = requests.get('http://localhost:5000/drivers/details')
+    response = requests.get('http://52.91.48.231:5000/drivers/details')
     print("resposne",response)
     driver_info= json.loads(response.text)
     
@@ -115,7 +115,7 @@ def get_real_time_data(trip_id):
     #     },
     #     # Add more trip status data as needed
     # ]
-    trip_status_data_api=requests.get(f'http://localhost:5002/getLastStatus/{trip_id}')
+    trip_status_data_api=requests.get(f'http://52.91.48.231:5002/getLastStatus/{trip_id}')
     trip_data=json.loads(trip_status_data_api.text)
     trip_status_data=trip_data
     print("tripstatus data",trip_status_data)
@@ -177,7 +177,7 @@ def get_real_time_data_json(trip_id):
     #     "Power": "97.7%" 
     #     }
     print("trip id in 2nd",trip_id)
-    trip_status_data_api=requests.get(f'http://localhost:5002/getLastStatus/{trip_id}')
+    trip_status_data_api=requests.get(f'http://52.91.48.231:5002/getLastStatus/{trip_id}')
     trip_status_data=json.loads(trip_status_data_api.text)
     trip_status_data=trip_status_data
     print("trip status 2nd",trip_status_data)
@@ -202,7 +202,7 @@ def register():
 
         }
         jsonrequest=json.dumps(vehicle)
-        response = requests.post('http://localhost:5000/vehicle/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
+        response = requests.post('http://52.91.48.231:5000/vehicle/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
         if response.status_code == 201:
             return render_template('registerAV.html', message="Registration Successful!!")
         else:
@@ -247,7 +247,7 @@ def submit_maintenance_record(vehicle_id):
 
     # Save the data to the database or wherever it needs to go
     jsonrequest=json.dumps(vehicle)
-    response = requests.post(f'http://localhost:5000/vehicle/{vehicle_id}/maintenance', data=jsonrequest,headers= {'Content-Type': 'application/json'})
+    response = requests.post(f'http://52.91.48.231:5000/vehicle/{vehicle_id}/maintenance', data=jsonrequest,headers= {'Content-Type': 'application/json'})
     if response.status_code == 201:
             return render_template('add_maintenance_record.html', vehicle_id=vehicle_id, message="Record Added Successfully!!")
     else:
@@ -277,7 +277,7 @@ def submit_insurance_record(vehicle_id):
 
     # Save the data to the database or wherever it needs to go
     jsonrequest=json.dumps(vehicle)
-    response = requests.post(f'http://localhost:5000/insurance/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
+    response = requests.post(f'http://52.91.48.231:5000/insurance/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
     if response.status_code == 201:
             return render_template('add_insurance.html', vehicle_id=vehicle_id, message="Record Added Successfully!!")
     else:
@@ -300,7 +300,7 @@ def submit_sensor_record(vehicle_id):
 
             }
         jsonrequest=json.dumps(sensor)
-        response = requests.post('http://localhost:5000/sensor/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
+        response = requests.post('http://52.91.48.231:5000/sensor/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
         if response.status_code == 201:
             return render_template('add_sensor.html', message="Sensor Registration Successful!!",vehicle_id=vehicle_id)
         else:
@@ -338,11 +338,11 @@ def dashboard():
 @app.route('/vehicle-details-admin/<vehicle_id>')
 def vehicle_details_admin(vehicle_id):
     
-    response = requests.get(f'http://localhost:5000/vehicle/{vehicle_id}')
+    response = requests.get(f'http://52.91.48.231:5000/vehicle/{vehicle_id}')
     vehicle_info= json.loads(response.text)
-    response_sensor = requests.get(f'http://localhost:5000/vehicle/{vehicle_id}/sensors')
+    response_sensor = requests.get(f'http://52.91.48.231:5000/vehicle/{vehicle_id}/sensors')
     vehicle_sensor_info= json.loads(response_sensor.text)
-    response_insurance = requests.get(f'http://localhost:5000/vehicle/{vehicle_id}/insurance')
+    response_insurance = requests.get(f'http://52.91.48.231:5000/vehicle/{vehicle_id}/insurance')
     vehicle_insurance_info= json.loads(response_insurance.text)
     if 'message' in vehicle_insurance_info:  # Assuming no records found
         vehicle_insurance_info = []
@@ -357,7 +357,7 @@ def vehicle_details_admin(vehicle_id):
     #             'start_time': '2024-04-22 08:00:00',
     #             'completed': False
     #         }
-    current_trip_api=requests.get(f'http://localhost:5002/getCurrentTrip/{vehicle_id}')
+    current_trip_api=requests.get(f'http://52.91.48.231:5002/getCurrentTrip/{vehicle_id}')
     currenttrip=json.loads(current_trip_api.text)
     print("current trip",currenttrip)
     if 'message' in currenttrip:
@@ -369,7 +369,7 @@ def vehicle_details_admin(vehicle_id):
     #                  'occupancy': 4, 'completed': True, 'start_time': {'$date': '2024-04-22T13:25:00Z'}, 
     #                  'end_time': {'$date': '2024-04-22T13:55:00Z'}, 'expiry_date': {'$date': '2025-04-22T13:25:00Z'}}]
     # print("currnet trip souce",currenttrip[0].source)
-    all_trip_api=requests.get(f'http://localhost:5002/getAllTrips/{vehicle_id}')
+    all_trip_api=requests.get(f'http://52.91.48.231:5002/getAllTrips/{vehicle_id}')
     alltrip=json.loads(all_trip_api.text)
     if 'message' in alltrip:
         alltrip = []
@@ -384,7 +384,7 @@ def vehicle_details_admin(vehicle_id):
     #                 'end_time': '2024-04-21 12:00:00'
     #             }
     #         ]
-    maintenance_records=requests.get(f'http://localhost:5000/vehicle/{vehicle_id}/maintenance')
+    maintenance_records=requests.get(f'http://52.91.48.231:5000/vehicle/{vehicle_id}/maintenance')
     vehicle_maintenance_info= json.loads(maintenance_records.text)
     
     print("vehicle info", vehicle_maintenance_info)
@@ -408,8 +408,8 @@ def registerbyadmin():
 
         }
         jsonrequest=json.dumps(vehicle)
-        response = requests.post('http://localhost:5000/vehicle/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
-        r1 = requests.get('http://localhost:5000/drivers')
+        response = requests.post('http://52.91.48.231:5000/vehicle/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
+        r1 = requests.get('http://52.91.48.231:5000/drivers')
         driver_data=json.loads(r1.text)
         if response.status_code == 201:
             return render_template('registerAvbyadmin.html', message="Registration Successful!!",driver_data=driver_data)
@@ -417,7 +417,7 @@ def registerbyadmin():
             return render_template('registerAvbyadmin.html', message="Registration unsuccessful!!",driver_data=driver_data)
 @app.route('/registerbyadmin')
 def registrationbyadmin():
-    r1 = requests.get('http://localhost:5000/drivers')
+    r1 = requests.get('http://52.91.48.231:5000/drivers')
     driver_data=json.loads(r1.text)
 
     
@@ -451,7 +451,7 @@ distance_data = {
 
 @app.route('/analytics')
 def index():
-    # r=requests.get('http://localhost:5002/tripsCountsPerVehicle')
+    # r=requests.get('http://52.91.48.231:5002/tripsCountsPerVehicle')
     # print(r)
     # rjson=json.loads(r.text)
     # print("rjson",rjson)
@@ -481,11 +481,11 @@ def registerusers():
 @app.route('/viewprofile')
 def viewprofile():
     account_id=session['account_id']
-    r=requests.get(f'http://localhost:5000/account/{account_id}')
+    r=requests.get(f'http://52.91.48.231:5000/account/{account_id}')
     profile=json.loads(r.text)
     print(profile)
     # driver_id=session['driver_id']
-    # r1=requests.get(f'http://localhost:5000/driver/{driver_id}')
+    # r1=requests.get(f'http://52.91.48.231:5000/driver/{driver_id}')
     # profile_driver=json.loads(r1.text)
     # print("profile",profile)
     # print("profile driver",profile_driver)
@@ -509,24 +509,24 @@ def updateprofile():
             # print(jsonrequest)
             # r = requests.post(f'http://{global_ip}/signin', data=jsonrequest, headers= {'Content-Type': 'application/json'})
             # Make a POST request to the /register/driver API
-     r = requests.put(f'http://localhost:5000/account/update/{account_id}', data=jsonrequest,headers= {'Content-Type': 'application/json'})
+     r = requests.put(f'http://52.91.48.231:5000/account/update/{account_id}', data=jsonrequest,headers= {'Content-Type': 'application/json'})
      if r.status_code == 200:
-        r1=requests.get(f'http://localhost:5000/account/{account_id}')
+        r1=requests.get(f'http://52.91.48.231:5000/account/{account_id}')
         profile=json.loads(r1.text)
         print(profile)
         # driver_id=session['driver_id']
-        # r1=requests.get(f'http://localhost:5000/driver/{driver_id}')
+        # r1=requests.get(f'http://52.91.48.231:5000/driver/{driver_id}')
         # profile_driver=json.loads(r1.text)
         # print("profile",profile)
         # print("profile driver",profile_driver)
         
         return render_template('profile.html',profile=profile,message="Profile Updated")
      else:
-        r1=requests.get(f'http://localhost:5000/account/{account_id}')
+        r1=requests.get(f'http://52.91.48.231:5000/account/{account_id}')
         profile=json.loads(r1.text)
         print(profile)
         # driver_id=session['driver_id']
-        # r1=requests.get(f'http://localhost:5000/driver/{driver_id}')
+        # r1=requests.get(f'http://52.91.48.231:5000/driver/{driver_id}')
         # profile_driver=json.loads(r1.text)
         # print("profile",profile)
         # print("profile driver",profile_driver)
@@ -549,7 +549,7 @@ def login():
             # print(jsonrequest)
             # r = requests.post(f'http://{global_ip}/signin', data=jsonrequest, headers= {'Content-Type': 'application/json'})
             # Make a POST request to the /register/driver API
-    r = requests.post('http://localhost:5000/login', data=jsonrequest,headers= {'Content-Type': 'application/json'})
+    r = requests.post('http://52.91.48.231:5000/login', data=jsonrequest,headers= {'Content-Type': 'application/json'})
     response = json.loads(r.text)
     print("response of login",response)
     if r.status_code == 200:
@@ -613,7 +613,7 @@ def registrations():
                     # print(jsonrequest)
                     # r = requests.post(f'http://{global_ip}/signin', data=jsonrequest, headers= {'Content-Type': 'application/json'})
                     # Make a POST request to the /register/driver API
-                    response = requests.post('http://localhost:5000/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
+                    response = requests.post('http://52.91.48.231:5000/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
                     print("repsosne",response)
                     
                     if response.status_code == 201:
@@ -644,7 +644,7 @@ def registrations():
                     # print(jsonrequest)
                     # r = requests.post(f'http://{global_ip}/signin', data=jsonrequest, headers= {'Content-Type': 'application/json'})
                     # Make a POST request to the /register/driver API
-                    response = requests.post('http://localhost:5000/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
+                    response = requests.post('http://52.91.48.231:5000/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
                     print("repsosne",response)
                     
                     if response.status_code == 201:
@@ -674,7 +674,7 @@ def registrations():
             # # print(jsonrequest)
             # # r = requests.post(f'http://{global_ip}/signin', data=jsonrequest, headers= {'Content-Type': 'application/json'})
             # # Make a POST request to the /register/driver API
-            # response = requests.post('http://localhost:5000/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
+            # response = requests.post('http://52.91.48.231:5000/register', data=jsonrequest,headers= {'Content-Type': 'application/json'})
             # print("repsosne",response)
             
             # if response.status_code == 201:
@@ -700,7 +700,7 @@ def admin_dashboard():
     #     # Add more entries as needed...
     # ]
     
-    r1 = requests.get('http://localhost:5000/vehicles')
+    r1 = requests.get('http://52.91.48.231:5000/vehicles')
     fleet_data=json.loads(r1.text)
 
     print(r1.text)
@@ -715,7 +715,7 @@ def admin_dashboard():
     {"id": "1415", "latitude": 60.7749, "longitude": -74.4194},
     # Add more coordinates here as needed
 ]
-    coordinatesbyapi=requests.get('http://localhost:5002/getRecentTripInfo')
+    coordinatesbyapi=requests.get('http://52.91.48.231:5002/getRecentTripInfo')
     print(coordinatesbyapi)
     coordinates=json.loads(coordinatesbyapi.text)
     print("coordinated by api ",coordinates)
@@ -734,7 +734,7 @@ def admin_dashboard():
 def driver_dashboard():
     driver_id=session['driver_id']
     jsonrequest={"driver_id":driver_id }
-    r1 = requests.post('http://localhost:5000/vehiclebydriverid', data=json.dumps(jsonrequest), headers= {'Content-Type': 'application/json'})
+    r1 = requests.post('http://52.91.48.231:5000/vehiclebydriverid', data=json.dumps(jsonrequest), headers= {'Content-Type': 'application/json'})
     print(r1.text)
     # fleet_data = [
     #     {"id":"123","make": "Mercedes", "model":"Benz Smart EQ Fortwo","status": "On-trip"},
@@ -814,7 +814,9 @@ scheduler.add_job(fetch_real_time_trip_info, 'interval', seconds=5)
 scheduler.start()
 
 if __name__ == '__main__':
-     app.run(host='127.0.0.1',port=5001,debug=True)
+    #  app.run(host='127.0.0.1',port=5001,debug=True)
+    app.run(host='0.0.0.0',port=5001,debug=True)
+
 
 # ******************for alerts******************
 # from flask import Flask, render_template
