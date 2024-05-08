@@ -1,0 +1,55 @@
+.container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #120237; /* Use dark purple for border */
+    border-radius: 5px;
+    background-color: white; /* Use white for background */
+}
+
+h2 {
+    text-align: center;
+    color: #120237; /* Use dark purple for the title text */
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #120237; /* Use dark purple for label text */
+}
+
+input[type="text"],
+input[type="date"],
+input[type="number"] { /* Assuming you might have a numeric input like VIN */
+    width: 90%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff; /* White background for inputs */
+    color: #120237; /* Dark purple text for input */
+}
+
+input[type="text"]:focus,
+input[type="date"]:focus,
+input[type="number"]:focus {
+    border-color: #120237; /* Dark purple border on focus */
+    outline: none; /* Remove default focus outline */
+}
+
+button {
+    width: 95%;
+    padding: 10px;
+    border: none;
+    border-radius: 5px;
+    background-color: #120237; /* Dark purple background for button */
+    color: white; /* White text for button */
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0e0a21; /* A slightly darker purple for hover */
+}

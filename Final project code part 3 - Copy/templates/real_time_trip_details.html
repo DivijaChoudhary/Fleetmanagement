@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Trip Details</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.4.0/justgage.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="/static/real_time_trip_details.css"> 
+</head>
+<body>
+    <div>
+        <h5>Real-Time Trip Details</h5>
+        <div class="row">
+            <!-- Engine RPM Gauge -->
+            <div>
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Engine RPM</h3>
+                    <div id="engine-rpm-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Speed Gauge -->
+            <div>
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Speed (km/h)</h3>
+                    <div id="speed-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Battery Level Gauge -->
+            <div>
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Battery Level (%)</h3>
+                    <div id="battery-level-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Engine Temperature Gauge -->
+            <div>
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Engine Temperature (°C)</h3>
+                    <div id="engine-temp-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <div>
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Acceleration</h3>
+                    <div id="acceleration-gauge" class="gauge"></div>
+                </div>
+            </div>
+        </div>
+        <!-- Additional Data Display -->
+        <!-- <div class="table-container">
+            <h4>Additional Trip Status</h4>
+            <table class="table-custom">
+                <thead>
+                    <tr>
+                        <th>Metric</th>
+                        <th>Value</th>
+                        <th>Units</th>
+                    </tr>
+                </thead>
+                <tbody id="additional-data">
+                    
+                </tbody>
+            </table>
+        </div> -->
+    </div><br>
+    <h5>Location</h5>
+    <div class="map-container">
+       
+        <div id="map"></div>
+    </div>
+    
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB00akbjrDHG4aMB2VsHAZeuux6z1WTX0I"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+    var tripId = "{{ trip_id }}"; // Ensure this is being passed
+
+    var rpmGauge = new JustGage({
+        id: "engine-rpm-gauge",
+        value: 0,
+        min: 0,
+        max: 8000,
+        title: "ENGINE RPM"
+    });
+
+    var speedGauge = new JustGage({
+        id: "speed-gauge",
+        value: 0,
+        min: 0,
+        max: 120,
+        title: "SPEED (km/h)"
+    });
+
+    var batteryGauge = new JustGage({
+        id: "battery-level-gauge",
+        value: 0,
+        min: 0,
+        max: 100,
+        title: "BATTERY LEVEL (%)"
+    });
+
+    var engineTempGauge = new JustGage({
+        id: "engine-temp-gauge",
+        value: 0,
+        min: 60,
+        max: 120,
+        title: "ENGINE TEMPERATURE (°C)"
+    });
+    var accelerationGauge = new JustGage({
+                id: "acceleration-gauge",
+                value: 0,
+                min: 0,
+                max: 120,
+                title: "ACCELERATION (m/s²)"
+            });
+
+    let map;
+    let vehicleMarker;
+    let currentLatLng; // Initial position
+    let pathCoordinates = []; // Store path coordinates for drawing polyline
+
+    function initMap() {
+        // Set initial position to a location on a specific road (for example, a street in New York City)
+        currentLatLng = new google.maps.LatLng(40.758896, -73.985130); 
+
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 17, // Set initial zoom level
+            center: currentLatLng,
+            mapTypeId: 'roadmap'
+        });
+        vehicleMarker = new google.maps.Marker({
+            position: currentLatLng,
+            map: map,
+            title: 'Vehicle Location'
+        });
+        fetchAndUpdateData(); // Start fetching data
+    }
+
+    function fetchAndUpdateData() {
+        // Generate random changes in latitude and longitude coordinates within a certain range
+        var newLat = currentLatLng.lat() + (Math.random() - 0.5) * 0.0001; // Adjust the range as needed
+        var newLng = currentLatLng.lng() + (Math.random() - 0.5) * 0.0001; // Adjust the range as needed
+        $.getJSON(`/getRealTimeDataJSON/${tripId}`, function(data) {
+                console.log(data)
+                rpmGauge.refresh(data.engine_rpm);
+                speedGauge.refresh(data.speed);
+                batteryGauge.refresh(data.battery_level);
+                engineTempGauge.refresh(data.engine_temp);
+                accelerationGauge.refresh(data.acceleration);
+            });
+// ****************************************
+        //rpmGauge.refresh(Math.random() * 8000); // Random engine RPM for demo
+        // speedGauge.refresh(Math.random() * 120); // Random speed for demo
+        // batteryGauge.refresh(Math.random() * 100); // Random battery level for demo
+        // engineTempGauge.refresh(Math.random() * 60 + 60); // Random engine temperature for demo
+        // accelerationGauge.refresh(Math.random() * 60 + 60);
+// ***********************
+       
+
+        const newLatLng = new google.maps.LatLng(newLat, newLng);
+
+        // Draw polyline between current and new positions
+        const path = new google.maps.Polyline({
+            path: [currentLatLng, newLatLng],
+            geodesic: true,
+            strokeColor: '#ADD8E6',
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+        });
+        path.setMap(map);
+        pathCoordinates.push(currentLatLng); // Store current position for polyline
+
+        // Move the vehicle marker along the path
+        moveVehicle(currentLatLng, newLatLng);
+
+        currentLatLng = newLatLng; // Update current position
+    }
+
+    // Function to move the vehicle marker smoothly
+    function moveVehicle(currentPosition, newPosition) {
+        var step = 50; // Number of steps to move
+        var delay = 100; // Delay between each step in milliseconds
+        var latStep = (newPosition.lat() - currentPosition.lat()) / step;
+        var lngStep = (newPosition.lng() - currentPosition.lng()) / step;
+        for (var i = 0; i < step; i++) {
+            setTimeout(function (index) {
+                currentPosition = new google.maps.LatLng(currentPosition.lat() + latStep, currentPosition.lng() + lngStep);
+                vehicleMarker.setPosition(currentPosition);
+                map.panTo(currentPosition);
+            }, delay * i, i); // Adjust timing for smoother movement
+        }
+    }
+
+    setInterval(fetchAndUpdateData, 5000); // Fetch data every 5 seconds
+
+    function createDataRow(metric, value, units) {
+        return `<tr>
+                    <td>${metric}</td>
+                    <td>${value}</td>
+                    <td>${units}</td>
+                </tr>`;
+    }
+
+    initMap(); 
+// Initialize map
+});
+    </script>
+</body>
+</html>

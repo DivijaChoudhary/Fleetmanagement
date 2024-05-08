@@ -1,0 +1,139 @@
+/* Reset default margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Body styles */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #FFFFFF; /* Sets a white background for the page */
+    color: #120237; /* Sets the text color to deep purple */
+    overflow-x: hidden;
+}
+html, body {
+    height: 100%; /* Ensures the html and body fill the screen height */
+    overflow: hidden; /* Prevents scrolling from the html and body level */
+}
+
+/* Heading styles */
+h1 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #120237; /* Deep purple color for main heading */
+}
+
+/* Sidebar styles */
+/* Sidebar styles */
+.sidebar {
+    width: 200px;
+    height: 100vh; /* Set the height to 100% of the viewport height */
+    float: left;
+    background-color: #120237; /* Deep purple background for sidebar */
+    color: #FFFFFF; /* White text in the sidebar */
+    position: fixed; /* Makes the sidebar stay in place while scrolling */
+    left: 0;
+    top: 0;
+}
+
+/* Content styles */
+.content {
+    margin-left: 220px; /* Adjusted to accommodate sidebar width plus a little extra for spacing */
+    padding: 100px;
+    background-color: #FFFFFF; /* White background for content */
+    color: #120237; /* Deep purple text in content */
+    min-height: 100vh; /* Ensures minimum height of content area matches viewport height */
+    overflow-y: auto; 
+    
+}
+
+/* Tab styles */
+.tab {
+    display: block;
+    padding: 20px 20px;
+    text-decoration: none;
+    color: #FFFFFF; /* White text for tabs */
+    background-color: #120237; /* Deep purple background for tabs */
+    margin-top: 50px;
+    margin-bottom: 2px white;
+}
+
+.tab:hover {
+    background-color: #2E1F47; /* Slightly lighter purple for hover */
+    color: #FFFFFF;
+}
+
+/* Content styles */
+.content {
+    margin-left: 220px; /* Adjusted to accommodate sidebar width */
+    padding: 20px;
+    background-color: #FFFFFF; /* White background for content */
+    color: #120237; /* Deep purple text in content */
+}
+
+/* Hide all tab contents by default */
+.tab-content {
+    display: none;
+}
+
+/* Show selected tab content */
+.tab-content.active {
+    display: block;
+}
+
+/* General styles for tab content */
+.tab-content h2 {
+    margin-top: 20px;
+    color: #120237; /* Deep purple for subheadings */
+}
+
+.tab-content p {
+    margin-left: 20px;
+    color: #120237;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    background-color: #FFFFFF; /* White background for tables */
+}
+
+th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: #120237; /* Deep purple background for table headers */
+    color: #FFFFFF; /* White text for headers */
+}
+
+tr:hover {
+    background-color: #EEE5F8; /* Very light purple for hover */
+}
+
+/* Additional style to highlight the alternating rows slightly for better readability */
+tr:nth-child(even) {
+    background-color: #F7F2F8; /* Very subtle light purple */
+}
+#general {
+    display: block;
+    background-color:#120237 ;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px black;
+    padding: 20px;
+    margin: 20px auto; /* Center the content horizontally */
+    max-width: 600px; /* Limit the width of the content */
+}
+
+#general h2 {
+    color:white;
+    text-align: center;
+}
+
+#general p {
+    color:white;
+    margin-bottom: 10px;
+}

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Driver Information Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #0f022d;
+            color: white;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+        }
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #FFFFFF;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #120237;
+            color: white;
+        }
+        td {
+            background-color: white;
+            color: #120237;
+        }
+        tr:nth-child(even) td {
+            background-color: #E8E8FF;
+            color: #120237;
+        }
+    </style>
+</head>
+<body>
+    <h1>Driver Information</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Driver Email</th>
+                <th>Firstname</th>
+                <th>Lastname</th>
+                <th>DOB</th>
+                <th>Street Address</th>
+                <th>City</th>
+                <th>State</th>
+                <th>Zipcode</th>
+                <th>Registered Vehicles</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for driver in driver_info %}
+            <tr>
+                <td>{{ driver.Email }}</td>
+                <td>{{ driver.Firstname }}</td>
+                <td>{{ driver.Lastname }}</td>
+                <td>{{ driver.DOB }}</td>
+                <td>{{ driver['Street Address'] }}</td>
+                <td>{{ driver.City }}</td>
+                <td>{{ driver.State }}</td>
+                <td>{{ driver.Zipcode }}</td>
+                <td>{{ driver['Number of Registered Vehicles'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

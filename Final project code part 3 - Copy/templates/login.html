@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column; /* Stacks items vertically */
+            background: linear-gradient(to right, #120237, #2a0e5e);
+            color: white;
+        }
+        h1 {
+            margin-bottom: 20px; /* Space between the title and the form */
+        }
+        .form-container {
+            background: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+            width: 350px;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            text-align: center;
+            color: #333;
+        }
+        input[type="text"], input[type="password"] {
+            width: calc(100% - 20px);
+            padding: 12px 10px;
+            margin-top: 8px;
+            border: 2px solid #ccc;
+            border-radius: 8px;
+            transition: border 0.3s, box-shadow 0.3s;
+        }
+        input[type="text"]:focus, input[type="password"]:focus {
+            border-color: #0e011e;
+            box-shadow: 0 0 8px rgba(14, 1, 30, 0.5); /* Adds a glow effect on focus */
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            margin-top: 20px;
+            background-color: #120237;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0e011e;
+        }
+        a {
+            color: #120237;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+            color: darkred;
+        }
+        p {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Autonomus Vehicle Management System</h1>
+    <div class="form-container">
+        <h2>Login</h2>
+        <form action="/submit-login" method="POST">
+            <input type="text" name="username" placeholder="Username" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <button type="submit">Login</button>
+           
+            <p>Don’t have an account? <a href="/registeruser">Register Here</a></p>
+        </form>
+        {{message}}
+    </div>
+    
+</body>
+</html>

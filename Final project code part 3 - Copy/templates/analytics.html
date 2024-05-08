@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .navbar {
+            background-color: #120237;
+            color: white;
+            padding: 10px 0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .navbar h1 {
+            margin: 0;
+        }
+
+        .chart-container {
+            width: 400px; /* Adjust width as needed */
+            height: 200px; /* Adjust height as needed */
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            float: left; /* Float left for side-by-side display */
+            margin-right: 20px; /* Add margin for spacing */
+        }
+        .chart-container1 {
+            width: 400px; /* Adjust width as needed */
+            height: 300px; /* Adjust height as needed */
+           
+            
+            border-radius: 5px;
+            
+           
+            margin-right: 20px; /* Add margin for spacing */
+        }
+
+        #distanceChart {
+            margin-right: 0; /* Remove margin for the last chart */
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>Analytics Dashboard</h1>
+    </div>
+
+    <div id="dateRange"></div> <!-- Date range container -->
+    <br>
+
+    <div class="chart-container">
+        <canvas id="utilizationChart"></canvas>
+    </div>
+    
+    <div class="chart-container">
+        <canvas id="distanceChart"></canvas>
+    </div><br>
+    
+    <div  class="chart-container1">
+        <h4>Current Vehicle Status</h4>
+        <canvas id="pieChart"></canvas>
+    </div>
+    
+    <script>
+        // Function to generate date range
+        function generateDateRange() {
+            var dateRangeContainer = document.getElementById('dateRange');
+            var endDate = new Date(); // Today's date
+            endDate.setHours(0, 0, 0, 0); // Set to midnight
+            var startDate = new Date(endDate);
+            startDate.setDate(startDate.getDate() - 6); // Six days before today
+
+            var dateRangeText = 'Date Range: ' + formatDate(startDate) + ' to ' + formatDate(endDate);
+            dateRangeContainer.innerText = dateRangeText;
+        }
+
+        // Function to format date as YYYY-MM-DD
+        function formatDate(date) {
+            var year = date.getFullYear();
+            var month = ('0' + (date.getMonth() + 1)).slice(-2);
+            var day = ('0' + date.getDate()).slice(-2);
+            return year + '-' + month + '-' + day;
+        }
+
+        // Call the function to generate date range
+        generateDateRange();
+
+        fetch('/average-utilization')
+            .then(response => response.json())
+            .then(data => {
+                renderUtilizationChart(data);
+            });
+
+        fetch('/distance-travelled')
+            .then(response => response.json())
+            .then(data => {
+                renderDistanceChart(data);
+            });
+
+        fetch('/vehicle-status-distribution')
+            .then(response => response.json())
+            .then(data => {
+                renderPieChart(data);
+            });
+
+        function renderUtilizationChart(data) {
+            var ctx = document.getElementById('utilizationChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Average Utilization by Day for all vehicles(%)',
+                        data: data.utilization,
+                        backgroundColor: '#120237' // Change color here
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Average Utilization by Day'
+                    }
+                }
+            });
+        }
+
+        function renderDistanceChart(data) {
+            var ctx = document.getElementById('distanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Distance Travelled by Day for all vehicles(Km)',
+                        data: data.distance,
+                        backgroundColor: '#023712' // Change color here
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Distance Travelled by Day'
+                    }
+                }
+            });
+        }
+
+        function renderPieChart(data) {
+            var ctx = document.getElementById('pieChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: ['Offline', 'On Trip', 'Online'],
+                    datasets: [{
+                        data: [data.offline, data.on_trip, data.online],
+                        backgroundColor: ['#120237', '#023712', '#120237'] // Change colors here
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Vehicle Status Distribution'
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

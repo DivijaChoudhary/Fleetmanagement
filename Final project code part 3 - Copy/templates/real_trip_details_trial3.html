@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Vehicle Monitoring</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.4.0/justgage.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB00akbjrDHG4aMB2VsHAZeuux6z1WTX0I"></script> <!-- Replace YOUR_API_KEY with your actual API key -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/real_time_trip_details.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-vlYovXd4onB/QM0mi6ra4uoQ+jBc4gmu5rIMBwT/0fN6Jn1OeCrkrttJa27hrx0l5P+01Ye1JS6sTgNzLHnyKw==" crossorigin="anonymous" />
+</head>
+<body>
+    
+    <div class="container">
+        <h5>Real-Time Trip Details</h5>
+        <div class="row">
+            <!-- Engine RPM Gauge -->
+            <div class="col-md-4">
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Engine RPM</h3>
+                    <div id="engine-rpm-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Speed Gauge -->
+            <div class="col-md-4">
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Speed (km/h)</h3>
+                    <div id="speed-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Battery Level Gauge -->
+            <div class="col-md-4">
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Battery Level (%)</h3>
+                    <div id="battery-level-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Engine Temperature Gauge -->
+            <div class="col-md-4">
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Engine Temperature (°C)</h3>
+                    <div id="engine-temp-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Acceleration Gauge -->
+            <div class="col-md-4">
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Acceleration</h3>
+                    <div id="acceleration-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Distance Completed Gauge -->
+            <div class="col-md-4">
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Distance Completed (km)</h3>
+                    <div id="distance-completed-gauge" class="gauge"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="map-container">
+        <h5>Location</h5>
+        <div id="map" style="height: 400px;"></div>
+    </div>
+    <br><br>
+    <div class="container">
+        <h4>Vehicle Status Details</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody id="status-details">
+                <!-- Data rows will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+    <br><br>
+    <div class="container">
+        <h5>Real-Time Vehicle Monitoring</h5>
+        <div class="row">
+            <div class="col-md-12">
+                <canvas id="realTimeDataGraph"></canvas>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div id="popupModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <p id="alertMessage"></p>
+        </div>
+    </div>
+    <!-- Include Socket.IO library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.min.js"></script>
+
+
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('realTimeDataGraph').getContext('2d');
+        const realTimeDataGraph = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Speed (km/h)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    fill: false,
+                    yAxisID: 'y',
+                    data: []
+                }, {
+                    label: 'Engine RPM',
+                    borderColor: 'rgb(54, 162, 235)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    fill: false,
+                    yAxisID: 'y1',
+                    data: []
+                }, {
+                    label: 'Engine Temperature (°C)',
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    fill: false,
+                    yAxisID: 'y2',
+                    data: []
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            tooltipFormat: 'HH:mm:ss',
+                            unit: 'second'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Speed (km/h)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false, // only want the grid lines for one axis to show up
+                        },
+                        title: {
+                            display: true,
+                            text: 'RPM'
+                        }
+                    },
+                    y2: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false, // only want the grid lines for one axis to show up
+                        },
+                        title: {
+                            display: true,
+                            text: 'Temperature (°C)'
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+
+        var rpmGauge = new JustGage({
+            id: "engine-rpm-gauge",
+            value: 0,
+            min: 0,
+            max: 8000,
+            title: "ENGINE RPM"
+        });
+
+        var speedGauge = new JustGage({
+            id: "speed-gauge",
+            value: 0,
+            min: 0,
+            max: 120,
+            title: "SPEED (km/h)"
+        });
+
+        var batteryGauge = new JustGage({
+            id: "battery-level-gauge",
+            value: 0,
+            min: 0,
+            max: 100,
+            title: "BATTERY LEVEL (%)"
+        });
+
+        var engineTempGauge = new JustGage({
+            id: "engine-temp-gauge",
+            value: 0,
+            min: 60,
+            max: 120,
+            title: "ENGINE TEMPERATURE (°C)"
+        });
+
+        var accelerationGauge = new JustGage({
+            id: "acceleration-gauge",
+            value: 0,
+            min: 0,
+            max: 120,
+            title: "ACCELERATION (m/s²)"
+        });
+
+        var distanceCompletedGauge = new JustGage({
+            id: "distance-completed-gauge",
+            value: 0,
+            min: 0,
+            max: 1000,
+            title: "DISTANCE COMPLETED (km)"
+        });
+
+        var mapOptions = {
+            zoom: 15,
+            center: new google.maps.LatLng(40.758896, -73.985130),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+        var vehicleMarker = new google.maps.Marker({
+            position: mapOptions.center,
+            map: map,
+            title: 'Vehicle Location',
+            icon: {
+                path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                scale: 7,
+                strokeColor: '#4285F4',
+                strokeWeight: 2,
+                fillColor: '#4285F4',
+                fillOpacity: 0.8,
+                rotation: 180
+            },
+        });
+
+        var routePath = new google.maps.Polyline({
+            path: [],
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+        });
+        routePath.setMap(map);
+
+        function fetchAndUpdateData() {
+            $.getJSON('/getRealTimeDataJSON/tripId', function(data) { // Replace 'tripId' with actual trip ID variable if needed
+                const now = new Date(data.timestamp * 1000);
+                realTimeDataGraph.data.labels.push(now);
+                realTimeDataGraph.data.datasets[0].data.push({
+                    x: now,
+                    y: data.speed
+                });
+                realTimeDataGraph.data.datasets[1].data.push({
+                    x: now,
+                    y: data.engine_rpm
+                });
+                realTimeDataGraph.data.datasets[2].data.push({
+                    x: now,
+                    y: data.engine_temp
+                });
+                realTimeDataGraph.update();
+                updateGauges(data);
+                updateVehiclePosition(data);
+                updateStatusDetails(data);
+            });
+        }
+
+        function updateGauges(data) {
+            rpmGauge.refresh(data.engine_rpm);
+            speedGauge.refresh(data.speed);
+            batteryGauge.refresh(data.battery_level);
+            engineTempGauge.refresh(data.engine_temp);
+            accelerationGauge.refresh(data.acceleration);
+            distanceCompletedGauge.refresh(data.distance_completed);
+        }
+
+        function updateVehiclePosition(data) {
+            var newPosition = new google.maps.LatLng(data.location_lat, data.location_lon);
+            vehicleMarker.setPosition(newPosition);
+            routePath.getPath().push(newPosition);
+            map.panTo(newPosition);
+        }
+
+        function updateStatusDetails(data) {
+            var details = [
+                {label: "Is Moving", value: data.ismoving},
+                {label: "Is Crashed", value: data.iscrashed},
+                {label: "Moving Direction", value: data.moving_direction.toFixed(2)},
+                {label: "Distance Completed", value: data.distance_completed.toFixed(2)},
+                {label: "Is Turning", value: data.isturning},
+                {label: "Angle Turn", value: data.angle_turn.toFixed(2)},
+                {label: "Left Turn Signal", value: data.left_turn_signal},
+                {label: "Right Turn Signal", value: data.right_turn_signal}
+            ];
+            
+            var tbody = document.getElementById('status-details');
+            tbody.innerHTML = ""; // Clear existing rows
+            
+            details.forEach(function(detail) {
+                var row = `<tr>
+                               <td>${detail.label}</td>
+                               <td>${detail.value}</td>
+                           </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+        
+
+        const socket = io();
+
+    // Socket.IO event handler for receiving alerts
+    socket.on('new_alert', function (data) {
+        // Handle the received alert data here
+        // For example, you can display the alert message in a popup modal
+        const alertMessage = document.getElementById('alertMessage');
+        alertMessage.innerHTML = `${data.timestamp}: ${data.alert}`;
+        const popupModal = document.getElementById('popupModal');
+        popupModal.style.display = 'block';
+
+        // Close the modal when the user clicks the close button
+        const closeBtn = document.getElementsByClassName('close')[0];
+        closeBtn.onclick = function () {
+            popupModal.style.display = 'none';
+        }
+
+        // Close the modal when the user clicks anywhere outside the modal
+        window.onclick = function (event) {
+            if (event.target == popupModal) {
+                popupModal.style.display = 'none';
+            }
+        }
+    });
+
+
+        setInterval(fetchAndUpdateData, 5000);
+    });
+    </script>
+</body>
+</html>

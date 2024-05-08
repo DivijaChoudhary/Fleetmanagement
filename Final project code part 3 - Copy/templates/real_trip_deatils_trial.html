@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Trip Details</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.4.0/justgage.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB00akbjrDHG4aMB2VsHAZeuux6z1WTX0I"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-vlYovXd4onB/QM0mi6ra4uoQ+jBc4gmu5rIMBwT/0fN6Jn1OeCrkrttJa27hrx0l5P+01Ye1JS6sTgNzLHnyKw==" crossorigin="anonymous" />
+    <link rel="stylesheet" href="/static/real_time_trip_details.css">
+</head>
+<body>
+    <div class="container">
+        <h5>Real-Time Trip Details</h5>
+        <div class="row">
+            <!-- Engine RPM Gauge -->
+            <div class="col-md-4">
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Engine RPM</h3>
+                    <div id="engine-rpm-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Speed Gauge -->
+            <div class="col-md-4">
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Speed (km/h)</h3>
+                    <div id="speed-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Battery Level Gauge -->
+            <div class="col-md-4">
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Battery Level (%)</h3>
+                    <div id="battery-level-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Engine Temperature Gauge -->
+            <div class="col-md-4">
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Engine Temperature (°C)</h3>
+                    <div id="engine-temp-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Acceleration Gauge -->
+            <div class="col-md-4">
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Acceleration</h3>
+                    <div id="acceleration-gauge" class="gauge"></div>
+                </div>
+            </div>
+            <!-- Distance Completed Gauge -->
+            <div class="col-md-4">
+                <div class="container-item gauge-container">
+                    <h3 class="gauge-title">Distance Completed (km)</h3>
+                    <div id="distance-completed-gauge" class="gauge"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <div class="map-container">
+        <h5>Location</h5>
+        <div id="map" style="height: 400px;"></div>
+    </div>
+    <div class="container">
+        <h4>Vehicle Status Details</h4>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Metric</th>
+                    <th>Value</th>
+                </tr>
+            </thead>
+            <tbody id="status-details">
+                <!-- Data rows will be added here dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var tripId = "{{ trip_id }}";// Assume this is dynamically provided
+
+        var rpmGauge = new JustGage({
+            id: "engine-rpm-gauge",
+            value: 0,
+            min: 0,
+            max: 8000,
+            title: "ENGINE RPM"
+        });
+
+        var speedGauge = new JustGage({
+            id: "speed-gauge",
+            value: 0,
+            min: 0,
+            max: 120,
+            title: "SPEED (km/h)"
+        });
+
+        var batteryGauge = new JustGage({
+            id: "battery-level-gauge",
+            value: 0,
+            min: 0,
+            max: 100,
+            title: "BATTERY LEVEL (%)"
+        });
+
+        var engineTempGauge = new JustGage({
+            id: "engine-temp-gauge",
+            value: 0,
+            min: 60,
+            max: 120,
+            title: "ENGINE TEMPERATURE (°C)"
+        });
+
+        var accelerationGauge = new JustGage({
+            id: "acceleration-gauge",
+            value: 0,
+            min: 0,
+            max: 120,
+            title: "ACCELERATION (m/s²)"
+        });
+
+        var distanceCompletedGauge = new JustGage({
+            id: "distance-completed-gauge",
+            value: 0,
+            min: 0,
+            max: 1000,
+            title: "DISTANCE COMPLETED (km)"
+        });
+
+        var mapOptions = {
+            zoom: 15,
+            center: new google.maps.LatLng(40.758896, -73.985130),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+        var vehicleMarker = new google.maps.Marker({
+            position: mapOptions.center,
+            map: map,
+            title: 'Vehicle Location',
+            icon: {
+                path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW,
+                scale: 7,
+                strokeColor: '#4285F4',
+                strokeWeight: 2,
+                fillColor: '#4285F4',
+                fillOpacity: 0.8,
+                rotation: 180
+            },
+        });
+
+        var routePath = new google.maps.Polyline({
+            path: [],
+            geodesic: true,
+            strokeColor: '#FF0000',
+            strokeOpacity: 1.0,
+            strokeWeight: 2
+        });
+        routePath.setMap(map);
+
+        function fetchAndUpdateData() {
+            $.getJSON(`/getRealTimeDataJSON/${tripId}`, function(data) {
+                updateGauges(data);
+                updateVehiclePosition(data);
+                updateStatusDetails(data);
+            });
+        }
+
+        function updateGauges(data) {
+            rpmGauge.refresh(data.engine_rpm);
+            speedGauge.refresh(data.speed);
+            batteryGauge.refresh(data.battery_level);
+            engineTempGauge.refresh(data.engine_temp);
+            accelerationGauge.refresh(data.acceleration);
+            distanceCompletedGauge.refresh(data.distance_completed);
+        }
+
+        function updateVehiclePosition(data) {
+            var newPosition = new google.maps.LatLng(data.location_lat, data.location_lon);
+            vehicleMarker.setPosition(newPosition);
+            routePath.getPath().push(newPosition);
+            map.panTo(newPosition);
+        }
+
+        function updateStatusDetails(data) {
+            var details = [
+                {label: "Is Moving", value: data.ismoving},
+                {label: "Is Crashed", value: data.iscrashed},
+                {label: "Moving Direction", value: data.moving_direction.toFixed(2)},
+                {label: "Distance Completed", value: data.distance_completed.toFixed(2)},
+                {label: "Is Turning", value: data.isturning},
+                {label: "Angle Turn", value: data.angle_turn.toFixed(2)},
+                {label: "Left Turn Signal", value: data.left_turn_signal},
+                {label: "Right Turn Signal", value: data.right_turn_signal}
+            ];
+            
+            var tbody = document.getElementById('status-details');
+            tbody.innerHTML = ""; // Clear existing rows
+            
+            details.forEach(function(detail) {
+                var row = `<tr>
+                               <td>${detail.label}</td>
+                               <td>${detail.value}</td>
+                           </tr>`;
+                tbody.innerHTML += row;
+            });
+        }
+
+        setInterval(fetchAndUpdateData, 5000); // Fetch data every 5 seconds
+    });
+    </script>
+</body>
+</html>

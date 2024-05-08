@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Include Font Awesome from CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <!-- Include your stylesheet here -->
+    <link rel="stylesheet" href="/static/driver_dashboard.css"> 
+    <title>User Dashboard</title>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <a href="#home">Driver Dashboard</a>
+        <a href="/register">Register New AV</a>
+        <a href="/alerts">Alerts</a>
+        
+    </div>
+    <!-- Navigation Bar -->
+    <div class="navbar">
+       
+        
+        <!-- <a href="#register">Register New AV</a>
+        <a href="#alerts">Alerts</a> --> 
+        <a href="/viewprofile" style="float:right">Profile</a>
+        <a href="/logout" style="float:right">Logout</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="main-content">
+
+        <!-- Fleet Table Container -->
+        <div class="table-container">
+            <h1>My Fleet</h1>
+            <table>
+                <tr>
+                    <th>Vehicle Identification Number</th>
+                    <th>Make</th>
+                    <th>Model</th>
+                    <th>Manufacturer</th>
+                    <th>Actions</th>
+                </tr>
+                {% for vehicle in fleet %}
+                    <tr>
+                        <td>{{ vehicle.vehicle_id }}</td>
+                        <td>{{ vehicle.make }}</td>
+                        <td>{{ vehicle.model }}</td>
+                        <td>
+                            <!-- <span class="status-indicator {{ vehicle.status|lower }}"></span> -->
+                            {{ vehicle.manufacturer }}
+                        </td>
+                        <td>
+                            <!-- View Vehicle Icon with Flask URL Routing -->
+                            <a href="/vehicle-details-admin/{{ vehicle.vehicle_id }}" title="View Vehicle">
+                                <i class="fas fa-eye" ></i>
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-container">
+            <div id="map" style="height: 500px;"></div>
+        </div>
+
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=
+    AIzaSyB00akbjrDHG4aMB2VsHAZeuux6z1WTX0I"></script>
+
+    <script>
+        // Initialize and display the map
+        function initMap() {
+            // Create a map object and specify the DOM element for display
+            var map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 4,
+                center: {lat: 37.7749, lng: -74.4194}  // Default center
+            });
+
+           // Define coordinates as a JSON object
+            var coordinates = JSON.parse('{{ coordinates_json|tojson|safe }}');
+
+
+            // Add markers for each coordinate
+            for (var i = 0; i < coordinates.length; i++) {
+                new google.maps.Marker({
+                    position: {lat: coordinates[i].latitude, lng: coordinates[i].longitude},
+                    map: map,
+                    label: coordinates[i].id.toString()
+                });
+            }
+        }
+    </script>
+
+    <!-- Call the initMap() function after the API has loaded -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=
+    AIzaSyB00akbjrDHG4aMB2VsHAZeuux6z1WTX0I&callback=initMap"></script>
+
+</body>
+</html>

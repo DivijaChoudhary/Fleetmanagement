@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Sensor</title>
+    <link rel="stylesheet" href="/static/add_sensor.css"> <!-- Adjust path as needed -->
+</head>
+<body>
+    <div class="container">
+        <h2>Add Sensor</h2>
+        <form action="/submit-sensor/{{ vehicle_id }}" method="post">
+            <div class="form-group">
+                <label for="sensorType">Sensor Type:</label>
+                <input type="text" id="sensorType" name="sensorType" placeholder="Enter sensor type">
+            </div>
+            
+            <div class="form-group">
+                <label for="sensorStatus">Sensor Status:</label>
+                <select id="sensorStatus" name="sensorStatus">
+                    <option value="Inactive">Faulty</option>
+                    <option value="Active">Healthy</option>
+                </select>
+            </div>
+            <button type="submit">Add Sensor</button>
+        </form>
+        {{message}}
+    </div>
+</body>
+</html>

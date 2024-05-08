@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vehicle Registration</title>
+    <link rel="stylesheet" href="/static/registerAVbyadmin.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Vehicle Registration</h2>
+        <form id="registrationForm" method="post" action="/registerAVbyadmin">
+            <div class="form-group">
+                <label for="make">Make:</label>
+                <input type="text" id="make" name="make" required>
+            </div>
+            <div class="form-group">
+                <label for="model">Model:</label>
+                <input type="text" id="model" name="model" required>
+            </div>
+            <div class="form-group">
+                <label for="registrationDate">Registration Date:</label>
+                <input type="date" id="registrationDate" name="registrationDate" required>
+            </div>
+            <div class="form-group">
+                <label for="manufacturer">Manufacturer:</label>
+                <input type="text" id="manufacturer" name="manufacturer" required>
+            </div>
+            <div class="form-group">
+                <label for="model">Mileage:</label>
+                <input type="text" id="mileage" name="mileage" required>
+            </div>
+            <div class="form-group">
+                <label for="owner">Owner:</label>
+                <select id="owner" name="owner" required>
+                    {% for driver in driver_data %}
+                            <option value="{{ driver.driver_id }}">{{ driver.first_name }} {{ driver.last_name }}</option>
+                    {% endfor %}
+                    <!-- Add more options as needed -->
+                </select>
+            </div>
+            <button type="submit">Register</button>
+        </form>
+        {{message}}
+    </div>
+    
+</body>
+</html>

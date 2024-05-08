@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Vehicle Monitoring</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/date-fns"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/raphael/2.3.0/raphael.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/justgage/1.4.0/justgage.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/real_time_trip_details.css">
+</head>
+<body>
+    <div class="container">
+        <h5>Real-Time Vehicle Monitoring</h5>
+        <div class="row">
+            <div class="col-md-12">
+                <canvas id="realTimeDataGraph"></canvas>
+            </div>
+        </div>
+    </div>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const ctx = document.getElementById('realTimeDataGraph').getContext('2d');
+        const realTimeDataGraph = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Speed (km/h)',
+                    borderColor: 'rgb(255, 99, 132)',
+                    backgroundColor: 'rgba(255, 99, 132, 0.5)',
+                    fill: false,
+                    yAxisID: 'y',
+                    data: []
+                }, {
+                    label: 'Engine RPM',
+                    borderColor: 'rgb(54, 162, 235)',
+                    backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                    fill: false,
+                    yAxisID: 'y1',
+                    data: []
+                }, {
+                    label: 'Engine Temperature (°C)',
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.5)',
+                    fill: false,
+                    yAxisID: 'y2',
+                    data: []
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'time',
+                        time: {
+                            tooltipFormat: 'HH:mm:ss',
+                            unit: 'second'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Time'
+                        }
+                    },
+                    y: {
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        title: {
+                            display: true,
+                            text: 'Speed (km/h)'
+                        }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false, // only want the grid lines for one axis to show up
+                        },
+                        title: {
+                            display: true,
+                            text: 'RPM'
+                        }
+                    },
+                    y2: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: {
+                            drawOnChartArea: false, // only want the grid lines for one axis to show up
+                        },
+                        title: {
+                            display: true,
+                            text: 'Temperature (°C)'
+                        },
+                        beginAtZero: true
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: true
+                    }
+                }
+            }
+        });
+
+        function fetchAndUpdateData() {
+            $.getJSON('/getRealTimeDataJSON/tripId', function(data) { // Replace 'tripId' with actual trip ID variable if needed
+                const now = new Date(data.timestamp * 1000);
+                realTimeDataGraph.data.labels.push(now);
+                realTimeDataGraph.data.datasets[0].data.push({
+                    x: now,
+                    y: data.speed
+                });
+                realTimeDataGraph.data.datasets[1].data.push({
+                    x: now,
+                    y: data.engine_rpm
+                });
+                realTimeDataGraph.data.datasets[2].data.push({
+                    x: now,
+                    y: data.engine_temp
+                });
+                realTimeDataGraph.update();
+            });
+        }
+
+        setInterval(fetchAndUpdateData, 5000);
+    });
+    </script>
+</body>
+</html>

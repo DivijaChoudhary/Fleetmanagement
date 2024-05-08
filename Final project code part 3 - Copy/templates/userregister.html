@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registration Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4; /* Light gray background */
+        }
+        .form-container {
+            background: white;
+            width: 350px;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        input[type="text"], input[type="password"], input[type="email"], select, input[type="date"] {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 95%;
+            padding: 10px;
+            background-color: #120237; /* Deep blue */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0e011e;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Registration</h2>
+        <form action="/submit-registration" method="POST">
+            <input type="email" name="username" placeholder="Email Address" required>
+            <input type="password" name="password" placeholder="Password" required>
+            <input type="text" name="firstname" placeholder="First Name" required>
+            <input type="text" name="lastname" placeholder="Last Name" required>
+            <input type="text" name="street_address" placeholder="Street Address" required>
+            <input type="text" name="city" placeholder="City" required>
+            <input type="text" name="state" placeholder="State" required>
+            <input type="text" name="zipcode" placeholder="Zipcode" required>
+            <select name="role" required onchange="toggleDriverFields()">
+                <option value="">Select Role</option>
+                <option value="admin">Admin</option>
+                <option value="driver">Driver</option>
+            </select>
+            <div class="hidden" id="driverSpecificFields">
+                <input type="date" name="dob" placeholder="Date of Birth">
+                <input type="text" name="licenseNumber" placeholder="License Number">
+            </div>
+            <button type="submit">Register</button>
+        </form>
+    </div>
+
+    <script>
+        function toggleDriverFields() {
+            var roleSelect = document.querySelector('[name="role"]');
+            var driverFields = document.getElementById('driverSpecificFields');
+            if (roleSelect.value === 'driver') {
+                driverFields.classList.remove('hidden');
+            } else {
+                driverFields.classList.add('hidden');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Insurance</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="/static/styles.css"> <!-- Path to your CSS file -->
+</head>
+<style>
+    /* General body styles */
+body {
+    font-family: Arial, sans-serif; /* Uses a neat and readable font */
+    background-color: #f4f4f4; /* Light gray background for slight contrast */
+    margin: 0;
+    padding: 20px; /* Adds padding around the content */
+}
+
+/* Container for the form, centers it on page */
+.container {
+    background-color: #ffffff; /* White background for the form area */
+    width: 80%;
+    max-width: 600px; /* Maximum width of the form */
+    margin: 30px auto; /* Centers the form on the page */
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    border-radius: 8px; /* Rounded corners for the form container */
+}
+
+/* Styling for form headings */
+h1 {
+    color: #333; /* Dark grey color for text for better readability */
+    font-size: 24px;
+    text-align: center; /* Centers the heading */
+}
+
+/* Label styling */
+label {
+    font-weight: bold; /* Makes labels bold */
+    display: block; /* Ensures each label is on a new line */
+    margin-bottom: 5px; /* Adds space below each label */
+    color: #666; /* Dark grey color for labels */
+}
+
+/* Input and button styling */
+input[type="text"],
+input[type="date"],
+button {
+    width: 100%; /* Full width of the container */
+    padding: 8px; /* Padding inside input fields and button */
+    margin-bottom: 20px; /* Space below each input field and button */
+    border-radius: 4px; /* Rounded borders for inputs and button */
+    border: 1px solid #ccc; /* Light grey border for inputs */
+}
+
+/* Button specific styling */
+button {
+    background-color: #0056b3; /* Blue background color for button */
+    color: white; /* White text color */
+    font-size: 16px;
+    border: none; /* No border for the button */
+    cursor: pointer; /* Cursor indicates button */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+/* Hover effect for button */
+button:hover {
+    background-color: #004494; /* Darker blue on hover */
+}
+
+</style>
+<body>
+    <div class="container">
+        <h1>Add Insurance Details</h1>
+        <form action="/submit-insurance/{{ vehicle_id }}" method="post"> <!-- Adjust the action URL as necessary -->
+            <div class="form-group">
+                <label for="insuredBy">Insured By:</label>
+                <input type="text" id="insuredBy" name="insuredBy" required>
+            </div>
+            <div class="form-group">
+                <label for="expirationDate">Expiration Date:</label>
+                <input type="date" id="expirationDate" name="expirationDate" required>
+            </div>
+            <div class="form-group">
+                <label for="policyNumber">Policy Number:</label>
+                <input type="text" id="policyNumber" name="policyNumber" required>
+            </div>
+            <button type="submit" class="btn">Submit</button>
+            <br><br>
+            {{message}}
+        </form>
+    </div>
+
+    
+</body>
+</html>

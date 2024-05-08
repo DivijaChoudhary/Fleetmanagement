@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Trip</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <link rel="stylesheet" href="/static/vehicle_details.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .form-container {
+            background: white;
+            width: 300px;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 50px auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        select, input[type="number"], button {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        button {
+            background-color: #120237; /* Deep blue */
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0e011e;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Create Trip</h2>
+        <br><br>
+        <form action="/submit-trip" method="POST">
+            <label for="source">Source:</label>
+            <select name="source" id="source" required>
+                <option value="">Select Source</option>
+                <option value="Location1">Location1</option>
+                <option value="Location2">Location2</option>
+                <option value="Location3">Location3</option>
+                <!-- Add more locations as needed -->
+            </select>
+            <label for="destination">Destination:</label>
+            <select name="destination" id="destination" required>
+                <option value="">Select Destination</option>
+                <option value="Location1">Location1</option>
+                <option value="Location2">Location2</option>
+                <option value="Location3">Location3</option>
+                <!-- Add more locations as needed -->
+            </select>
+            <input type="number" name="occupancy" placeholder="Occupancy" required>
+            <button type="submit">Submit</button>
+        </form>
+        {{message}}
+    </div>
+</body>
+</html>

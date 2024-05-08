@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AV Details</title>
+    <!-- Include Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <!-- Link to your external stylesheet -->
+    <link rel="stylesheet" href="/static/vehicle_details.css">
+    <!-- <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
+        .sidebar {
+            float: left;
+            width: 20%;
+            background: #f4f4f4;
+            height: 100vh; /* Full viewport height */
+            overflow: auto; /* Scrollable if content is too tall */
+        }
+        .content {
+            float: left;
+            width: 80%;
+            padding: 20px;
+        }
+        .tab {
+            padding: 10px;
+            display: block;
+            text-decoration: none;
+            color: black;
+            background: #e0e0e0;
+            border-bottom: 1px solid #d1d1d1;
+        }
+        .tab:hover {
+            background-color: #c1c1c1;
+        }
+        .active {
+            background-color: #120237;
+            color: white;
+        }
+        .tab-content {
+            display: none;
+        }
+    </style> -->
+</head>
+<body>
+   
+
+    <!-- Sidebar with navigation tabs -->
+    <div class="sidebar">
+        <a href="#" class="tab active" onclick="openTab(event, 'general')">General</a>
+        <a href="#" class="tab" onclick="openTab(event, 'sensor')">Sensor Information</a>
+        <a href="#" class="tab" onclick="openTab(event, 'trip')">Trip Details</a>
+        <a href="#" class="tab" onclick="openTab(event, 'maintenance')">Maintenance Records</a>
+        <a href="#" class="tab" onclick="openTab(event, 'insurance')">Insurance Records</a>
+    </div>
+
+    <!-- Main content area for tabbed information -->
+    <div class="content">
+        <div id="general" class="tab-content" style="display: block;"> <!-- General information tab -->
+            <h2>General Information</h2>
+            <br>
+            <p>Vehicle Id: {{ vehicle.vehicle_id }}</p>
+            <p>Make: {{ vehicle.make }}</p>
+            <p>Model: {{ vehicle.model }}</p>
+            <p>Owner: {{ vehicle.owner.first_name }} {{vehicle.owner.last_name}}</p>
+        </div>
+       
+        <div id="sensor" class="tab-content"> <!-- Sensor information tab -->
+            <h2>Sensor Information</h2>
+            <br>
+            <button onclick="window.location.href='/add-sensor/{{ vehicle.vehicle_id }}'">Add Sensor</button>
+            <br><br>
+            <table>
+                <tr>
+                    <th>Sensor Type</th>
+                    <th>Sensor Status</th>
+                </tr>
+               
+                {% for sensor in vehicle_sensor %}
+                <tr>
+                   
+                    <td>{{ sensor.sensor_type }}</td>
+                    <td>{{ sensor.sensor_status }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        <div id="insurance" class="tab-content"> <!-- insurance information tab -->
+            <h2>Insurance Information</h2>
+            <br>
+        
+            {% if not vehicle_insurance_info %}
+        <button onclick="window.location.href='/add-insurance/{{ vehicle.vehicle_id }}'">Add Insurance</button>
+    {% endif %}
+            <!-- <button onclick="window.location.href='/add-insurance/{{ vehicle.vehicle_id }}'">Add Insurance</button> -->
+            <br><br>
+            <table>
+                <tr>
+                    <th>Insurance ID</th>
+                    <th>Insured by</th>
+                    <th>Expiration date</th>
+                    <th>Policy number</th>
+                </tr>
+               
+                <tr>
+                    <td>{{ vehicle_insurance_info.insurance_id }}</td>
+                    <td>{{ vehicle_insurance_info.insured_by }}</td>
+                    <td>{{ vehicle_insurance_info.expiration_date }}</td>
+                    <td>{{ vehicle_insurance_info.policy_no }}</td>
+                </tr>
+
+            </table>
+        </div>
+        <div id="trip" class="tab-content"> <!-- Trip details tab -->
+            
+            <!-- Current trip details -->
+            <h1>Current Trip</h1>
+           
+            
+
+    <table>
+        <thead>
+            <tr>
+                <th>Source</th>
+                <th>Destination</th>
+                <th>Occupancy</th>
+                <th>Start Time</th>
+                <th>Completed</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% if current_trip %}
+                {% for trip in current_trip %}
+                    <tr>
+                        <td>{{ trip.source.coordinates[0] }}, {{ trip.source.coordinates[1] }}</td>
+                        <td>{{ trip.destination.coordinates[0] }}, {{ trip.destination.coordinates[1] }}</td>
+                        <td>{{ trip.occupancy }}</td>
+                        <td>{{ trip.start_time['$date'] }}</td>
+                        <td>{{ trip.completed }}</td>
+                        <td><a href="/getRealTimeData/{{ trip._id['$oid'] }}"><i class="fas fa-eye"></i></a></td>
+                    </tr>
+                {% endfor %}
+                {% else %}
+    <p>No current trips found for this vehicle.</p>
+{% endif %} 
+        </tbody>
+    </table>
+
+
+            <br><br>
+            <!-- All trips details -->
+            <h3>All Trips</h3>
+            <br><br>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Source</th>
+                        <th>Destination</th>
+                        <th>Occupancy</th>
+                        <th>Start Time</th>
+                        <th>Completed</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if all_trips %}
+                        {% for trip in all_trips %}
+                            <tr>
+                                <td>{{ trip.source.coordinates[0] }}, {{ trip.source.coordinates[1] }}</td>
+                                <td>{{ trip.destination.coordinates[0] }}, {{ trip.destination.coordinates[1] }}</td>
+                                <td>{{ trip.occupancy }}</td>
+                                <td>{{ trip.start_time['$date'] }}</td>
+                                <td>{{ trip.completed }}</td>
+                               
+                            </tr>
+                        {% endfor %}
+                        {% else %}
+            <p>No  trips found for this vehicle.</p>
+        {% endif %} 
+                </tbody>
+            </table>
+        </div>
+
+        <div id="maintenance" class="tab-content"> <!-- Maintenance records tab -->
+            <h2>Maintenance Information</h2>
+            <br><br>
+            <button onclick="window.location.href='/add-maintenance-record/{{ vehicle.vehicle_id }}'">Add More Records</button>
+            <br><br>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Service Date</th>
+                        <th>Tires Rotated</th>
+                        <th>Air Filter Changed</th>
+                        <th>Battery Status</th>
+                        <th>Brakes Replaced</th>
+                        <th>Oil Changed</th>
+                        <th>Wiper Changed</th>
+                        <th>Wiper Fluid Refilled</th>
+                        <th>Tires Changed</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in vehicle_maintenance_info %}
+                    <tr>
+                        <td>{{ record.service_date }}</td>
+                        <td>{{ '✔' if record.tires_rotated else '' }}</td>
+                        <td>{{ '✔' if record.air_filter_changed else '' }}</td>
+                        <td>{{ '✔' if record.battery_status else '' }}</td>
+                        <td>{{ '✔' if record.brakes_replaced else '' }}</td>
+                        <td>{{ '✔' if record.oil_changed else '' }}</td>
+                        <td>{{ '✔' if record.wipers_changed else '' }}</td>
+                        <td>{{ '✔' if record.wiper_fluid_refilled else '' }}</td>
+                        <td>{{ '✔' if record.tires_changed else '' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- JavaScript for tab switching functionality -->
+    <script>
+        function openTab(evt, tabName) {
+            // Get all elements with class="tab-content" and hide them
+            var tabContent = document.getElementsByClassName("tab-content");
+            for (var i = 0; i < tabContent.length; i++) {
+                tabContent[i].style.display = "none";
+            }
+
+            // Get all elements with class="tab" and remove the class "active"
+            var tabs = document.getElementsByClassName("tab");
+            for (var i = 0; i < tabs.length; i++) {
+                tabs[i].className = tabs[i].className.replace(" active", "");
+            }
+
+            // Show the current tab, and add an "active" class to the button that opened the tab
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>

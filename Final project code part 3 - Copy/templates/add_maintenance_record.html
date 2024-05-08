@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Maintenance Record</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f7f7f7;
+        }
+        .container {
+            max-width: 500px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"],
+        input[type="date"],
+        input[type="checkbox"],
+        button {
+            width: calc(100% - 22px);
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        button {
+            background-color: #0056b3;
+            color: white;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #003d82;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h3>Add Maintenance Record for Vehicle ID: {{ vehicle_id }}</h3>
+        <form action="/submit-maintenance-record/{{ vehicle_id }}" method="post">
+            <!-- CSRF token should be included here if using Flask-WTF -->
+            <div class="form-group">
+                <label for="serviceDate">Service Date:</label>
+                <input type="date" id="serviceDate" name="serviceDate" required>
+            </div>
+            <div class="form-group">
+                <label for="tiresRotated">Tires Rotated:</label>
+                <input type="checkbox" id="tiresRotated" name="tiresRotated">
+            </div>
+            <div class="form-group">
+                <label for="air_filter_changed">Air_filter_changed</label>
+                <input type="checkbox" id="air_filter_changed" name="air_filter_changed">
+            </div>
+            <div class="form-group">
+                <label for="battery">Battery:</label>
+                <input type="checkbox" id="battery" name="battery">
+            </div>
+            <div class="form-group">
+                <label for="brakes">Brakes Replaced:</label>
+                <input type="checkbox" id="brakes" name="brakes">
+            </div>
+            
+            <div class="form-group">
+                <label for="Oil Changed">Oil Changed:</label>
+                <input type="checkbox" id="OilChanged" name="OilChanged">
+            </div>
+            <div class="form-group">
+                <label for="Wiper Changed">Wiper Changed:</label>
+                <input type="checkbox" id="WiperChanged" name="WiperChanged">
+            </div>
+            <div class="form-group">
+                <label for="Wiper Fuild Refilled">Wiper Fuild Refilled:</label>
+                <input type="checkbox" id="WiperFuildRefilled" name="WiperFuildRefilled">
+            </div>
+            <div class="form-group">
+                <label for="Tire Changed">Tire Changed:</label>
+                <input type="checkbox" id="tireschanged" name="tireschanged">
+            </div>
+
+            <!-- Add additional fields as necessary -->
+            <button type="submit">Submit</button>
+        </form>
+        {{message}}
+    </div>
+    
+</body>
+</html>
